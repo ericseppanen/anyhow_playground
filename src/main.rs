@@ -53,6 +53,15 @@ pub fn open_file_2() -> anyhow::Result<()> {
 
 // Generating an anyhow error from a string
 //
+// This is probably the fastest way to do error handling.
+// If we're writing first-draft code and we just need it working
+// as quickly as possible, this is a good way to get that.
+//
+// It's most suitable for high-level code, where we know there's
+// not a caller that will be inspecting the errors we return. If
+// the errors are only going to be printed to the terminal, this
+// works fine.
+//
 // Note in many contexts it's easiest to use
 // `bail!("something happened")`.
 // That won't work inside `ok_or_else`, because `bail!` expands to `return Err(...)`
@@ -83,8 +92,8 @@ pub fn access_map_1(key: u32) -> anyhow::Result<u32> {
 // 2. It's likely that we'll expand the error type into an enum with
 //    multiple variants (that the caller will match on).
 //
-// Note that the error type has zero size. This will inline or optimize
-// very nicely.
+// Note that the error type has zero size. This is really friendly to
+// the compiler's ability to inline or optimize.
 // Note also that we don't return anyhow::Error here; that would kind
 // of negate the potential optimization benefits.
 //
@@ -109,7 +118,7 @@ pub fn access_map_2(key: u32) -> Result<u32, LookupFailure> {
 // If we anticipate that callers may want to match on our
 // error type, we should add an enum variant for each.
 //
-// If this is a public crate, we should add the [`non_exhaustive`]
+// If this is a public crate, we might want to add the [`non_exhaustive`]
 // attribute to error enums so we can add more variants in the
 // future without it being a breaking change.
 //
