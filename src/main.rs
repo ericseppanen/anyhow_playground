@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use std::fs::File;
+use std::fs::{self, File};
 
 // Should we add `use anyhow::{Error, Result};` ?
 //
@@ -8,6 +8,21 @@ use std::fs::File;
 // The latter seems more likely, so we may want to only `use anyhow::Error`.
 // The answer depends on what your code is doing.
 use anyhow::{anyhow, bail, Context};
+
+// Basic use of `anyhow` to handle disparate error types
+//
+// `anyhow` can do the same job as `dyn std::error::Error`: it can
+// be a container for whatever error types you want to throw.
+// In this example, we might get an io::Error when trying to read
+// the file, but we might also get some other error type from the
+// call to `parse`.
+
+pub fn open_file_1() -> anyhow::Result<u64> {
+    let filename = "nonexistent_file";
+    let data = fs::read_to_string(filename)?;
+    let n: u64 = data.parse()?;
+    Ok(n)
+}
 
 // Using `anyhow` to add context
 //
@@ -30,7 +45,7 @@ use anyhow::{anyhow, bail, Context};
 // any error type to `anyhow::Error`, not all errors are useful
 // when propagated to the caller.
 
-pub fn open_file_1() -> anyhow::Result<()> {
+pub fn open_file_2() -> anyhow::Result<()> {
     let filename = "nonexistent_logfile";
     File::open(filename).with_context(|| format!("failed to open {:?}", filename))?;
     Ok(())
@@ -127,6 +142,8 @@ fn main() -> anyhow::Result<()> {
     // Uncomment the one you want.
 
     //open_file_1()?;
+
+    //open_file_2()?;
 
     //access_map_1(41)?;
 
