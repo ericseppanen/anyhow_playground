@@ -13,8 +13,8 @@ use anyhow::{anyhow, bail, Context};
 //
 // `anyhow` can do the same job as `dyn std::error::Error`: it can
 // be a container for whatever error types you want to throw.
-// In this example, we might get an io::Error when trying to read
-// the file, but we might also get some other error type from the
+// In this example, we might get an `io::Error` when trying to read
+// the file, but we might also get a `ParseIntError` from the
 // call to `parse`.
 
 pub fn open_file_1() -> anyhow::Result<u64> {
@@ -40,7 +40,7 @@ pub fn open_file_1() -> anyhow::Result<u64> {
 //
 // It's possible that our caller doesn't really want the io::Error
 // to be propagated: do they care why the file open failed?
-// It might be wiser to create a LogfileError type instead.
+// It might be wiser to create a `LogfileError` type instead.
 // Even though you can use `?` to do magic conversions from
 // any error type to `anyhow::Error`, not all errors are useful
 // when propagated to the caller.
@@ -88,7 +88,7 @@ pub fn access_map_1(key: u32) -> anyhow::Result<u32> {
 // Note also that we don't return anyhow::Error here; that would kind
 // of negate the potential optimization benefits.
 //
-// When printed by `main`, this error looks the same as access_map_1()
+// When printed by `main`, this error looks the same as `access_map_1()`
 
 #[derive(Debug, thiserror::Error)]
 #[error("key lookup failure")]
