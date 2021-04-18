@@ -1,0 +1,11 @@
+[package]
+name = "anyhow_playground"
+version = "0.1.0"
+description = "Easy sample code for using anyhow and thiserror"
+authors = ["Eric Seppanen <eds@reric.net>"]
+license = "MIT"
+edition = "2018"
+
+[dependencies]
+anyhow = "1.0"
+thiserror = "1.0"
