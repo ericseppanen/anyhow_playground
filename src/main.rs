@@ -1,5 +1,7 @@
 use std::collections::HashMap;
 use std::fs::{self, File};
+use std::io;
+use std::num::ParseIntError;
 
 // Should we add `use anyhow::{Error, Result};` ?
 //
@@ -46,7 +48,7 @@ pub fn open_file_1() -> anyhow::Result<u64> {
 // when propagated to the caller.
 
 pub fn open_file_2() -> anyhow::Result<()> {
-    let filename = "nonexistent_logfile";
+    let filename = "nonexistent_file";
     File::open(filename).with_context(|| format!("failed to open {:?}", filename))?;
     Ok(())
 }
@@ -147,12 +149,53 @@ pub fn access_map_3(key: u32) -> Result<u32, IdNumberError> {
     }
 }
 
+// Wrapping errors in an enum with `thiserror`
+//
+// Sometimes we want a little bit of both worlds: we want our
+// own well-defined error enum, but we also want to capture
+// some underlying error types.
+//
+// `thiserror` does all its work at compile time.
+// When we use `#[from]`, a procedural macro runs and builds an
+// implementation of `From<io:Error>` for `NumFileError`,
+// which is all you need to be able to use the `?` operator.
+//
+// Note that the body of the open_file_3 function is exactly the
+// same as `open_file_1`. So this is an easy upgrade if you decide
+// you want something a little more concrete than `anyhow::Error`.
+
+#[derive(Debug, thiserror::Error)]
+pub enum NumFileError {
+    #[error("failed to read file")]
+    FileReadFailure(#[from] io::Error),
+    #[error("failed to parse number")]
+    InvalidNumber,
+}
+
+// We could have let `thiserror` write this for us, but then
+// we would have `NumFileError::InvalidNumber(ParsIntError)`.
+// Plain `NumFileError::InvalidNumber` is simpler.
+impl From<ParseIntError> for NumFileError {
+    fn from(_: ParseIntError) -> Self {
+        NumFileError::InvalidNumber
+    }
+}
+
+pub fn open_file_3() -> Result<u64, NumFileError> {
+    let filename = "nonexistent_file";
+    let data = fs::read_to_string(filename)?;
+    let n: u64 = data.parse()?;
+    Ok(n)
+}
+
 fn main() -> anyhow::Result<()> {
     // Uncomment the one you want.
 
     //open_file_1()?;
 
     //open_file_2()?;
+
+    //open_file_3()?;
 
     //access_map_1(41)?;
 

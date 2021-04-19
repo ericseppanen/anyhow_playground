@@ -5,4 +5,4 @@ Can you show me a quick example of code that uses them?
 
 This is my one-file attempt at answering those questions.
 
-[Experiment with this code in the Rust Playground!](https://play.rust-lang.org/?version=stable&mode=debug&edition=2018&gist=049932be3f56b18ea64f74fa95551ae0)
+[Experiment with this code in the Rust Playground!](https://play.rust-lang.org/?version=stable&mode=debug&edition=2018&gist=9bf6f148834c39e9f1117715ccae01ab)
